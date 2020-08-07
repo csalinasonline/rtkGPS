@@ -108,9 +108,8 @@ void loop()
     d_lon += ((double)longitudeHp) / 1000000000.0; // Now add the high resolution component (degrees * 10^-9 )
 
    // Print the lat and lon
-    Serial.print("Lat (deg): ");
     Serial.print(d_lat, 9);
-    Serial.print(", Lon (deg): ");
+    Serial.print(", ");
     Serial.print(d_lon, 9);
 
     // Now define float storage for the heights and accuracy
@@ -134,13 +133,13 @@ void loop()
     f_accuracy = f_accuracy / 10000.0; // Convert from mm * 10^-1 to m
 
     // Finally, do the printing
-    Serial.print(", Ellipsoid (m): ");
+    Serial.print(", ");
     Serial.print(f_ellipsoid, 4); // Print the ellipsoid with 4 decimal places
 
-    Serial.print(", Mean Sea Level (m): ");
+    Serial.print(", ");
     Serial.print(f_msl, 4); // Print the mean sea level with 4 decimal places
 
-    Serial.print(", Accuracy (m): ");
+    Serial.print(", ");
     Serial.println(f_accuracy, 4); // Print the accuracy with 4 decimal places
   }
 }
