@@ -121,7 +121,7 @@ void loop()
     Serial.print(", Lon (deg): ");
     Serial.print(lon_int); // Print the integer part of the latitude
     Serial.print(".");
-    Serial.println(lon_frac); // Print the fractional part of the latitude
+    Serial.print(lon_frac); // Print the fractional part of the latitude
 
     // Now define float storage for the heights and accuracy
     float f_ellipsoid;
@@ -144,7 +144,7 @@ void loop()
     f_accuracy = f_accuracy / 10000.0; // Convert from mm * 10^-1 to m
 
     // Finally, do the printing
-    Serial.print("Ellipsoid (m): ");
+    Serial.print(", Ellipsoid (m): ");
     Serial.print(f_ellipsoid, 4); // Print the ellipsoid with 4 decimal places
 
     Serial.print(", Mean Sea Level(m): ");
