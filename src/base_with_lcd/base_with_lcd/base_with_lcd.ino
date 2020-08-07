@@ -200,11 +200,5 @@ void loop()
 //Useful for passing the RTCM correction data to a radio, Ntrip broadcaster, etc.
 void SFE_UBLOX_GPS::processRTCM(uint8_t incoming)
 {
-  //Let's just pretty-print the HEX values for now
-  if (myGPS.rtcmFrameCounter % 16 == 0)
-    Serial.println();
-  Serial.print(" ");
-  if (incoming < 0x10)
-    Serial.print("0");
-  Serial.print(incoming, HEX);
+  Serial.write(incoming);
 }
