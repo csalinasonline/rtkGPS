@@ -40,7 +40,15 @@ void setup()
   Serial.begin(115200);
   while (!Serial)
     ; //Wait for user to open terminal
-  Serial.println("Ublox GPS I2C Test");
+  //Serial.println("Ublox GPS I2C Test");
+
+  Serial.print("$$$");
+  delay(1000);
+  Serial.println("SM,1");  
+  delay(1000);
+  Serial.println("C,000666B87369");
+  delay(1000);
+  Serial.println("---");
 
   Wire.begin();
 
@@ -55,7 +63,7 @@ void setup()
   myGPS.begin(Wire);
   if (myGPS.isConnected() == false)
   {
-    Serial.println(F("Ublox GPS not detected at default I2C address. Please check wiring. Freezing."));
+    //Serial.println(F("Ublox GPS not detected at default I2C address. Please check wiring. Freezing."));
     lcd.setCursor(0, 1);
     lcd.print(F("No GPS detected"));
     while (1)
@@ -80,11 +88,12 @@ void setup()
   response &= myGPS.enableRTCMmessage(UBX_RTCM_1230, COM_PORT_I2C, 10); //Enable message every 10 seconds
   if (response == true)
   {
-    Serial.println(F("RTCM messages enabled"));
+    ;
+    //Serial.println(F("RTCM messages enabled"));
   }
   else
   {
-    Serial.println(F("RTCM failed to enable. Are you sure you have an ZED-F9P? Freezing."));
+    //Serial.println(F("RTCM failed to enable. Are you sure you have an ZED-F9P? Freezing."));
     while (1)
       ; //Freeze
   }
@@ -93,14 +102,14 @@ void setup()
   response = myGPS.getSurveyStatus(2000); //Query module for SVIN status with 2000ms timeout (request can take a long time)
   if (response == false)
   {
-    Serial.println(F("Failed to get Survey In status. Freezing."));
+    //Serial.println(F("Failed to get Survey In status. Freezing."));
     while (1)
       ; //Freeze
   }
 
   if (myGPS.svin.active == true)
   {
-    Serial.print(F("Survey already in progress."));
+    //Serial.print(F("Survey already in progress."));
     lcd.setCursor(0, 2);
     lcd.print(F("Survey already going"));
   }
@@ -110,13 +119,13 @@ void setup()
     response = myGPS.enableSurveyMode(60, 5.000); //Enable Survey in, 60 seconds, 5.0m
     if (response == false)
     {
-      Serial.println(F("Survey start failed"));
+      //Serial.println(F("Survey start failed"));
       lcd.setCursor(0, 3);
       lcd.print(F("Survey start failed. Freezing."));
       while (1)
         ;
     }
-    Serial.println(F("Survey started. This will run until 60s has passed and less than 5m accuracy is achieved."));
+    //Serial.println(F("Survey started. This will run until 60s has passed and less than 5m accuracy is achieved."));
   }
 
   while (Serial.available())
@@ -135,7 +144,7 @@ void setup()
       {
         //Stop survey mode
         response = myGPS.disableSurveyMode(); //Disable survey
-        Serial.println(F("Survey stopped"));
+        //Serial.println(F("Survey stopped"));
         break;
       }
     }
@@ -143,17 +152,17 @@ void setup()
     response = myGPS.getSurveyStatus(2000); //Query module for SVIN status with 2000ms timeout (req can take a long time)
     if (response == true)
     {
-      Serial.print(F("Press x to end survey - "));
-      Serial.print(F("Time elapsed: "));
-      Serial.print((String)myGPS.svin.observationTime);
+      //Serial.print(F("Press x to end survey - "));
+      //Serial.print(F("Time elapsed: "));
+      //Serial.print((String)myGPS.svin.observationTime);
 
       lcd.setCursor(0, 1);
       lcd.print(F("Elapsed: "));
       lcd.print((String)myGPS.svin.observationTime);
 
-      Serial.print(F(" Accuracy: "));
-      Serial.print((String)myGPS.svin.meanAccuracy);
-      Serial.println();
+      //Serial.print(F(" Accuracy: "));
+      //Serial.print((String)myGPS.svin.meanAccuracy);
+      //Serial.println();
 
       lcd.setCursor(0, 2);
       lcd.print(F("Accuracy: "));
@@ -161,14 +170,15 @@ void setup()
     }
     else
     {
-      Serial.println(F("SVIN request failed"));
+      ;
+      //Serial.println(F("SVIN request failed"));
     }
 
     delay(1000);
   }
-  Serial.println(F("Survey valid!"));
+  //Serial.println(F("Survey valid!"));
 
-  Serial.println(F("Base survey complete! RTCM now broadcasting."));
+  //Serial.println(F("Base survey complete! RTCM now broadcasting."));
   lcd.clear();
   lcd.print(F("Transmitting RTCM"));
 
