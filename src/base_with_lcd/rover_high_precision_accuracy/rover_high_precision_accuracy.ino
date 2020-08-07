@@ -33,6 +33,8 @@ void setup()
   Serial.begin(115200);
   while (!Serial); //Wait for user to open terminal
 
+  delay(5000);  // Wait 5 secs for BlueSMiRF Gold to warmup.
+
   Wire.begin();
 
   //myGPS.enableDebugging(Serial);
