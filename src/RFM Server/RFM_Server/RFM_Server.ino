@@ -22,7 +22,7 @@ void setup()
 {
   pinMode(LED, OUTPUT);
 
-  Serial1.begin(9600);
+  Serial1.begin(115200);
   // It may be difficult to read serial messages on startup. The following
   // line will wait for serial to be ready before continuing. Comment out if not needed.
   while(!Serial1);
