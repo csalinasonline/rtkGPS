@@ -52,35 +52,35 @@ void setup()
 
 void loop()
 {
-  if (rf95.available()){
-    // Should be a message for us now
-    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-    uint8_t len = sizeof(buf);
-
-    if (rf95.recv(buf, &len)){
-      digitalWrite(LED, HIGH); //Turn on status LED
-      timeSinceLastPacket = millis(); //Timestamp this packet
-
-      Serial1.print("Got message: ");
-      Serial1.print((char*)buf);
-      //Serial1.print(" RSSI: ");
-      //Serial1.print(rf95.lastRssi(), DEC);
-      Serial1.println();
+//  if (rf95.available()){
+//    // Should be a message for us now
+//    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+//    uint8_t len = sizeof(buf);
+//
+//    if (rf95.recv(buf, &len)){
+//      digitalWrite(LED, HIGH); //Turn on status LED
+//      timeSinceLastPacket = millis(); //Timestamp this packet
+//
+//      Serial1.print("Got message: ");
+//      Serial1.print((char*)buf);
+//      //Serial1.print(" RSSI: ");
+//      //Serial1.print(rf95.lastRssi(), DEC);
+//      Serial1.println();
 
       // Send a reply
       uint8_t toSend[] = "Hello Back!"; 
       rf95.send(toSend, sizeof(toSend));
       rf95.waitPacketSent();
-      Serial1.println("Sent a reply");
-      digitalWrite(LED, LOW); //Turn off status LED
+//      Serial1.println("Sent a reply");
+//      digitalWrite(LED, LOW); //Turn off status LED
 
-    }
-    else
-      Serial1.println("Recieve failed");
-  }
-  //Turn off status LED if we haven't received a packet after 1s
-  if(millis() - timeSinceLastPacket > 1000){
-    digitalWrite(LED, LOW); //Turn off status LED
-    timeSinceLastPacket = millis(); //Don't write LED but every 1s
-  }
+//    }
+//    else
+//      Serial1.println("Recieve failed");
+//  }
+//  //Turn off status LED if we haven't received a packet after 1s
+//  if(millis() - timeSinceLastPacket > 1000){
+//    digitalWrite(LED, LOW); //Turn off status LED
+//    timeSinceLastPacket = millis(); //Don't write LED but every 1s
+//  }
 }

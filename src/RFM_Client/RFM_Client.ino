@@ -63,13 +63,13 @@ void setup()
 
 void loop()
 {
-  Serial1.println("Sending message");
-
-  //Send a message to the other radio
-  uint8_t toSend[] = "Hi there!";
-  //sprintf(toSend, "Hi, my counter is: %d", packetCounter++);
-  rf95.send(toSend, sizeof(toSend));
-  rf95.waitPacketSent();
+//  Serial1.println("Sending message");
+//
+//  //Send a message to the other radio
+//  uint8_t toSend[] = "Hi there!";
+//  //sprintf(toSend, "Hi, my counter is: %d", packetCounter++);
+//  rf95.send(toSend, sizeof(toSend));
+//  rf95.waitPacketSent();
 
   // Now wait for a reply
   byte buf[RH_RF95_MAX_MESSAGE_LEN];
