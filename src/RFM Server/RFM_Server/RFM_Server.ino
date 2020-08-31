@@ -1,4 +1,4 @@
-#include <SPI.h>
+ #include <SPI.h>
 
 //Radio Head Library: 
 #include <RH_RF95.h>
@@ -23,7 +23,7 @@ void setup()
   pinMode(LED, OUTPUT);
 
   Serial1.begin(115200);
-  Serial1.setTimeout(500);
+  Serial1.setTimeout(2000);
   // It may be difficult to read serial messages on startup. The following
   // line will wait for serial to be ready before continuing. Comment out if not needed.
   while(!Serial1);
@@ -54,15 +54,25 @@ void setup()
 void loop()
 {
   // Should be a message for us now
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t buf[400];
   uint8_t len = sizeof(buf);
 
   // Send a reply
   uint8_t toSend;
   if (Serial1.available()) {      // If anything comes in Serial (USB),
-   toSend = Serial1.read();   // read it and send it out Serial1 (pins 0 & 1)
-    
-   rf95.send(&toSend, sizeof(toSend));
-   rf95.waitPacketSent();
+   int data_len = Serial1.readBytes(buf, len);   // read it and send it out Serial1 (pins 0 & 1)
+
+   if ( data_len < RH_RF95_MAX_MESSAGE_LEN) {
+     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
+     rf95.waitPacketSent();   
+     digitalWrite(LED, HIGH); 
+   }
+   else {
+     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
+     rf95.waitPacketSent();  
+     rf95.send((buf+RH_RF95_MAX_MESSAGE_LEN), RH_RF95_MAX_MESSAGE_LEN - data_len);
+     rf95.waitPacketSent();  
+   }
+
   }
 }
