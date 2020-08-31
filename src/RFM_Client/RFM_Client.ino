@@ -30,20 +30,20 @@ void setup()
 {
   pinMode(LED, OUTPUT);
 
-  Serial1.begin(115200);
+  SerialUSB.begin(115200);
   // It may be difficult to read serial messages on startup. The following line
   // will wait for serial to be ready before continuing. Comment out if not needed.
-  while(!Serial1); 
-  Serial1.println("RFM Client!"); 
+  while(!SerialUSB); 
+  SerialUSB.println("RFM Client!"); 
 
   //Initialize the Radio.
   if (rf95.init() == false){
-    Serial1.println("Radio Init Failed - Freezing");
+    SerialUSB.println("Radio Init Failed - Freezing");
     while (1);
   }
   else{
     //An LED inidicator to let us know radio initialization has completed. 
-    Serial1.println("Transmitter up!"); 
+    SerialUSB.println("Transmitter up!"); 
     digitalWrite(LED, HIGH);
     delay(500);
     digitalWrite(LED, LOW);
@@ -63,14 +63,6 @@ void setup()
 
 void loop()
 {
-//  Serial1.println("Sending message");
-//
-//  //Send a message to the other radio
-//  uint8_t toSend[] = "Hi there!";
-//  //sprintf(toSend, "Hi, my counter is: %d", packetCounter++);
-//  rf95.send(toSend, sizeof(toSend));
-//  rf95.waitPacketSent();
-
   // Now wait for a reply
   byte buf[RH_RF95_MAX_MESSAGE_LEN];
   byte len = sizeof(buf);
@@ -78,17 +70,7 @@ void loop()
   if (rf95.waitAvailableTimeout(2000)) {
     // Should be a reply message for us now
     if (rf95.recv(buf, &len)) {
-      Serial1.print("Got reply: ");
-      Serial1.println((char*)buf);
-      //Serial1.print(" RSSI: ");
-      //Serial1.print(rf95.lastRssi(), DEC);
-    }
-    else {
-      Serial1.println("Receive failed");
+      SerialUSB.write(buf, len);
     }
   }
-  else {
-    Serial1.println("No reply, is the receiver running?");
-  }
-  delay(500);
 }

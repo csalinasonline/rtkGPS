@@ -23,6 +23,7 @@ void setup()
   pinMode(LED, OUTPUT);
 
   Serial1.begin(115200);
+  Serial1.setTimeout(500);
   // It may be difficult to read serial messages on startup. The following
   // line will wait for serial to be ready before continuing. Comment out if not needed.
   while(!Serial1);
@@ -52,35 +53,16 @@ void setup()
 
 void loop()
 {
-//  if (rf95.available()){
-//    // Should be a message for us now
-//    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-//    uint8_t len = sizeof(buf);
-//
-//    if (rf95.recv(buf, &len)){
-//      digitalWrite(LED, HIGH); //Turn on status LED
-//      timeSinceLastPacket = millis(); //Timestamp this packet
-//
-//      Serial1.print("Got message: ");
-//      Serial1.print((char*)buf);
-//      //Serial1.print(" RSSI: ");
-//      //Serial1.print(rf95.lastRssi(), DEC);
-//      Serial1.println();
+  // Should be a message for us now
+  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t len = sizeof(buf);
 
-      // Send a reply
-      uint8_t toSend[] = "Hello Back!"; 
-      rf95.send(toSend, sizeof(toSend));
-      rf95.waitPacketSent();
-//      Serial1.println("Sent a reply");
-//      digitalWrite(LED, LOW); //Turn off status LED
-
-//    }
-//    else
-//      Serial1.println("Recieve failed");
-//  }
-//  //Turn off status LED if we haven't received a packet after 1s
-//  if(millis() - timeSinceLastPacket > 1000){
-//    digitalWrite(LED, LOW); //Turn off status LED
-//    timeSinceLastPacket = millis(); //Don't write LED but every 1s
-//  }
+  // Send a reply
+  uint8_t toSend;
+  if (Serial1.available()) {      // If anything comes in Serial (USB),
+   toSend = Serial1.read();   // read it and send it out Serial1 (pins 0 & 1)
+    
+   rf95.send(&toSend, sizeof(toSend));
+   rf95.waitPacketSent();
+  }
 }
