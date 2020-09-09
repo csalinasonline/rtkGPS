@@ -63,7 +63,7 @@ void loop()
    int data_len = Serial1.readBytes(buf, len);   // read it and send it out Serial1 (pins 0 & 1)
 
    if ( data_len < RH_RF95_MAX_MESSAGE_LEN) {
-     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
+     rf95.send(buf, data_len);
      rf95.waitPacketSent();   
      digitalWrite(LED, HIGH); 
    }
@@ -72,7 +72,7 @@ void loop()
      rf95.waitPacketSent();  
      rf95.send((buf+RH_RF95_MAX_MESSAGE_LEN), RH_RF95_MAX_MESSAGE_LEN - data_len);
      rf95.waitPacketSent();  
-   }
+   } 
 
   }
 }
