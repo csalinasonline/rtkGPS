@@ -10,6 +10,9 @@
 //Radio Head Library:
 #include <RH_RF95.h> 
 
+// Defines
+#define DEBUG
+
 // We need to provide the RFM95 module's chip select and interrupt pins to the
 // rf95 instance below.On the SparkFun ProRF those pins are 12 and 6 respectively.
 RH_RF95 rf95(12, 6);
@@ -29,21 +32,37 @@ float frequency = 921.2; //Broadcast frequency
 void setup()
 {
   pinMode(LED, OUTPUT);
-
+#ifdef DEBUG
   SerialUSB.begin(115200);
+#else
+  Serial1.begin(115200);
+#endif
   // It may be difficult to read serial messages on startup. The following line
   // will wait for serial to be ready before continuing. Comment out if not needed.
+#ifdef DEBUG
   while(!SerialUSB); 
-  SerialUSB.println("RFM Client!"); 
+  SerialUSB.println("RFM Client!");
+#else
+  while(!Serial1); 
+  Serial1.println("RFM Client!");
+#endif
 
   //Initialize the Radio.
   if (rf95.init() == false){
+#ifdef DEBUG
     SerialUSB.println("Radio Init Failed - Freezing");
+#else
+    Serial1.println("Radio Init Failed - Freezing");
+#endif
     while (1);
   }
   else{
     //An LED inidicator to let us know radio initialization has completed. 
+#ifdef DEBUG    
     SerialUSB.println("Transmitter up!"); 
+#else
+    Serial1.println("Transmitter up!");
+#endif    
     digitalWrite(LED, HIGH);
     delay(500);
     digitalWrite(LED, LOW);
@@ -70,7 +89,11 @@ void loop()
   if (rf95.waitAvailableTimeout(2000)) {
     // Should be a reply message for us now
     if (rf95.recv(buf, &len)) {
+#ifdef DEBUG       
       SerialUSB.write(buf, len);
+#else
+      Serial1.write(buf, len);
+#endif        
     }
   }
 }
