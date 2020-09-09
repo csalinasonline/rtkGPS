@@ -55,22 +55,28 @@ void loop()
 {
   // Should be a message for us now
   uint8_t buf[400];
+  uint8_t buf2[10];
   uint8_t len = sizeof(buf);
 
   // Send a reply
   uint8_t toSend;
   if (Serial1.available()) {      // If anything comes in Serial (USB),
    int data_len = Serial1.readBytes(buf, len);   // read it and send it out Serial1 (pins 0 & 1)
-
-   if ( data_len < RH_RF95_MAX_MESSAGE_LEN) {
-     rf95.send(buf, data_len);
+   
+   if ( data_len < 3) {
+     buf[data_len] = 0xaa;
+     rf95.send(buf, data_len + 1);
      rf95.waitPacketSent();   
-     digitalWrite(LED, HIGH); 
    }
    else {
-     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
+     memcpy(buf2, buf, 3);
+     buf2[3] = 0xbb;
+     rf95.send(buf2, 3 + 1);
      rf95.waitPacketSent();  
-     rf95.send((buf+RH_RF95_MAX_MESSAGE_LEN), RH_RF95_MAX_MESSAGE_LEN - data_len);
+
+     memcpy(buf2, buf + 3, data_len - 3);
+     buf2[data_len - 3] = 0xcc;
+     rf95.send(buf2, data_len - 3 + 1);
      rf95.waitPacketSent();  
    } 
 
