@@ -1,4 +1,4 @@
-#define I2C_ROVER_ADDRESS  4
+#define I2C_LORA_ADDRESS  4
 
 #include <Wire.h> //Needed for I2C to GPS
 
@@ -7,14 +7,24 @@ void setup() {
   while (!SerialUSB)
     ; //Wait for user to open terminal
   SerialUSB.println("Serial: Lora Test");
-  
-  Wire.begin(); 
+
+  Wire.setClock(400000); //Increase I2C clock speed to 400kHz
+  Wire.begin(I2C_LORA_ADDRESS); 
+  Wire.onRequest(requestEvents);
+  Wire.onReceive(receiveEvents);
 }
 
 void loop() {
-  SerialUSB.println("Sent i2c message to slave");
-  Wire.beginTransmission(I2C_ROVER_ADDRESS); // transmit to device I2C_ROVER_ADDRESS
+
+}
+
+void requestEvents()
+{
+  SerialUSB.println(F("Recieved request"));
   Wire.write("I2C: Rover Lora Test");  // sends bytes
-  Wire.endTransmission();    // stop transmitting
-  delay(1000);
+}
+
+void receiveEvents(int numBytes)
+{  
+
 }
