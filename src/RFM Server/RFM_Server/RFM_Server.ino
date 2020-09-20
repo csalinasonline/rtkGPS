@@ -1,7 +1,9 @@
- #include <SPI.h>
-
+#include <SPI.h>
+#include <Wire.h>
 //Radio Head Library: 
 #include <RH_RF95.h>
+
+#define I2C_SLAVE_ADDRESS 4
 
 // We need to provide the RFM95 module's chip select and interrupt pins to the 
 // rf95 instance below.On the SparkFun ProRF those pins are 12 and 6 respectively.
@@ -18,25 +20,27 @@ long timeSinceLastPacket = 0; //Tracks the time stamp of last packet received
 //float frequency = 864.1;
 float frequency = 921.2;
 
+int buf_len;
+
 void setup()
 {
   pinMode(LED, OUTPUT);
 
-  Serial1.begin(115200);
-  Serial1.setTimeout(2000);
+  SerialUSB.begin(115200);
+  SerialUSB.setTimeout(2000);
   // It may be difficult to read serial messages on startup. The following
   // line will wait for serial to be ready before continuing. Comment out if not needed.
-  while(!Serial1);
-  Serial1.println("RFM Server!");
+  while(!SerialUSB);
+  SerialUSB.println("RFM Server!");
 
   //Initialize the Radio. 
   if (rf95.init() == false){
-    Serial1.println("Radio Init Failed - Freezing");
+    SerialUSB.println("Radio Init Failed - Freezing");
     while (1);
   }
   else{
   // An LED indicator to let us know radio initialization has completed.
-    Serial1.println("Receiver up!");
+    SerialUSB.println("Receiver up!");
     digitalWrite(LED, HIGH);
     delay(500);
     digitalWrite(LED, LOW);
@@ -44,6 +48,10 @@ void setup()
   }
 
   rf95.setFrequency(frequency); 
+
+  Wire.begin(I2C_SLAVE_ADDRESS);
+  Wire.onRequest(requestEvents);
+  Wire.onReceive(receiveEvents);
 
  // The default transmitter power is 13dBm, using PA_BOOST.
  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
@@ -53,26 +61,25 @@ void setup()
 
 void loop()
 {
-  // Should be a message for us now
-  uint8_t buf[400];
-  uint8_t len = sizeof(buf);
+//  // Should be a message for us now
+//  uint8_t buf[400];
+//  uint8_t len = sizeof(buf);
+//
+//   if ( buf_len < RH_RF95_MAX_MESSAGE_LEN) {
+//     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
+//     rf95.waitPacketSent();   
+//     digitalWrite(LED, HIGH); 
+//   }
+}
 
-  // Send a reply
-  uint8_t toSend;
-  if (Serial1.available()) {      // If anything comes in Serial (USB),
-   int data_len = Serial1.readBytes(buf, len);   // read it and send it out Serial1 (pins 0 & 1)
+void requestEvents()
+{
 
-   if ( data_len < RH_RF95_MAX_MESSAGE_LEN) {
-     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
-     rf95.waitPacketSent();   
-     digitalWrite(LED, HIGH); 
-   }
-   else {
-     rf95.send(buf, RH_RF95_MAX_MESSAGE_LEN);
-     rf95.waitPacketSent();  
-     rf95.send((buf+RH_RF95_MAX_MESSAGE_LEN), RH_RF95_MAX_MESSAGE_LEN - data_len);
-     rf95.waitPacketSent();  
-   }
+}
 
-  }
+void receiveEvents(int numBytes)
+{  
+  uint8_t c = Wire.read();
+  buf_len = numBytes;
+  SerialUSB.write(c);
 }
