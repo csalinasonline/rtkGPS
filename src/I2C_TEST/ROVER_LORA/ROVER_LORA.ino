@@ -10,6 +10,7 @@
 RH_RF95 rf95(12, 6);
 
 int LED = 13; //Status LED on pin 13
+int RADIO_RDY = 5; //Radio Ready 5
 
 int packetCounter = 0; //Counts the number of packets sent
 long timeSinceLastPacket = 0; //Tracks the time stamp of last packet received
@@ -20,12 +21,18 @@ long timeSinceLastPacket = 0; //Tracks the time stamp of last packet received
 //float frequency = 864.1;
 float frequency = 921.2;
 
+uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; 
+uint8_t len = sizeof(buf);
+
 void setup() {
   SerialUSB.begin(115200);
   while (!SerialUSB)
     ; //Wait for user to open terminal
   SerialUSB.println("Serial: Lora Test");
 
+  pinMode(RADIO_RDY, OUTPUT);
+  digitalWrite(RADIO_RDY, LOW);
+  
   //Initialize the Radio. 
   if (rf95.init() == false){
     SerialUSB.println("Radio Init Failed - Freezing");
@@ -50,8 +57,6 @@ void setup() {
 
 void loop() {
   if (rf95.available()) { //Read the availabe message 
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; 
-  uint8_t len = sizeof(buf);
     if (rf95.recv(buf, &len)) { //Receive the message 
       digitalWrite(LED, HIGH); 
       //RH_RF95::printBuffer("Received: ", buf, len); 
@@ -67,13 +72,17 @@ void loop() {
     else { //If receive failed 
       SerialUSB.println("Receive failed"); 
     }  // Else 2 end
+    digitalWrite(RADIO_RDY, HIGH);
   }   // If 1 End
 }
 
 void requestEvents()
 {
   SerialUSB.println(F("Recieved request"));
-  Wire.write("I2C: Rover Lora Test");  // sends bytes
+  for( int i = 0; i < len; i++ ) {
+    Wire.write(buf[i]);  // sends bytes
+  }
+  digitalWrite(RADIO_RDY, LOW);
 }
 
 void receiveEvents(int numBytes)

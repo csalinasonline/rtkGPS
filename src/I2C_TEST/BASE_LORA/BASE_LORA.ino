@@ -20,6 +20,10 @@ long timeSinceLastPacket = 0; //Tracks the time stamp of last packet received
 //float frequency = 864.1;
 float frequency = 921.2;
 
+bool rdy_pkt = false;
+uint8_t radiopacket[20];
+int len_pkt;
+
 void setup() {
   SerialUSB.begin(115200);
   while (!SerialUSB)
@@ -49,32 +53,39 @@ void setup() {
 }
 
 void loop() {
-  char radiopacket[20]= "12345";
-  SerialUSB.print("Sending "); 
-  SerialUSB.println(radiopacket);
-  rf95.send((uint8_t *) radiopacket, 20);
-  rf95.waitPacketSent();
-  
-  // Waiting for the reply 
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; 
-  uint8_t len = sizeof(buf);
-    
-  if (rf95.waitAvailableTimeout(1000)) {
-  // Should be a reply message for us now 
-    if (rf95.recv(buf, &len)) { 
-      SerialUSB.print("Got reply: ");
-      SerialUSB.println((char*)buf); 
-      //  SerialUSB.print("RSSI: "); 
-      //  SerialUSB.println(rf95.lastRssi(), DEC); 
-    }  // If 2 end
+
+  if(rdy_pkt) {
+  //  char radiopacket[20]= "12345";
+  //  SerialUSB.print("Sending "); 
+  //  SerialUSB.println(radiopacket);
+  //  rf95.send((uint8_t *) radiopacket, 20);
+  //  rf95.waitPacketSent();
+
+    SerialUSB.println("Sending "); 
+    rf95.send((uint8_t *) radiopacket, len_pkt);
+    rf95.waitPacketSent();
+      
+    // Waiting for the reply 
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; 
+    uint8_t len = sizeof(buf);
+      
+    if (rf95.waitAvailableTimeout(1000)) {
+    // Should be a reply message for us now 
+      if (rf95.recv(buf, &len)) { 
+        SerialUSB.print("Got reply: ");
+        SerialUSB.println((char*)buf); 
+        //  SerialUSB.print("RSSI: "); 
+        //  SerialUSB.println(rf95.lastRssi(), DEC); 
+      }  // If 2 end
+      else { 
+        SerialUSB.println("Receive failed"); 
+      } // Else 2 end
+    } // If 1 end
     else { 
-      SerialUSB.println("Receive failed"); 
-    } // Else 2 end
-  } // If 1 end
-  else { 
-    SerialUSB.println("No reply, is the receiver running?"); 
-  }  // Else 1 end 
-  delay(1000);
+      SerialUSB.println("No reply, is the receiver running?"); 
+    }  // Else 1 end 
+  }
+  rdy_pkt = false;
 }
 
 void requestEvents()
@@ -85,16 +96,15 @@ void requestEvents()
 void receiveEvents(int numBytes)
 {  
   int i = 0;
+  len_pkt = numBytes;
   SerialUSB.println(F("Recieved events"));
   SerialUSB.print(numBytes);
   SerialUSB.println(F(" bytes recieved"));
   for( int i = 0; i < numBytes; i++ ) {
     uint8_t c = Wire.read();
     SerialUSB.write(c);
-    if (rf95.available()){
-      rf95.send(&c, sizeof(c));
-      rf95.waitPacketSent();
-    }
+    radiopacket[i] = c;
   }
   SerialUSB.println();
+  rdy_pkt = true;
 }

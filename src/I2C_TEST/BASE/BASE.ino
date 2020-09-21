@@ -14,7 +14,7 @@ void setup() {
 void loop() {
   Serial.println("Sent i2c message to slave");
   Wire.beginTransmission(I2C_LORA_ADDRESS); // transmit to device I2C_LORA_ADDRESS
-  Wire.write("I2C: Base Lora Test");  // sends bytes
+  Wire.write("Hi!!!");  // sends bytes
   Wire.endTransmission();    // stop transmitting
   delay(1000);
 }
