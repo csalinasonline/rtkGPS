@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <Wire.h>
+#include <string.h>
 //Radio Head Library: 
 #include <RH_RF95.h>
 
@@ -23,6 +24,7 @@ float frequency = 921.2;
 
 uint8_t buf[RH_RF95_MAX_MESSAGE_LEN]; 
 uint8_t len = sizeof(buf);
+uint8_t len_pkt;
 
 void setup() {
   SerialUSB.begin(115200);
@@ -58,6 +60,7 @@ void setup() {
 void loop() {
   if (rf95.available()) { //Read the availabe message 
     if (rf95.recv(buf, &len)) { //Receive the message 
+      len_pkt = len;
       digitalWrite(LED, HIGH); 
       //RH_RF95::printBuffer("Received: ", buf, len); 
       SerialUSB.print("Got: "); 
@@ -78,11 +81,18 @@ void loop() {
 
 void requestEvents()
 {
-  SerialUSB.println(F("Recieved request"));
-  for( int i = 0; i < len; i++ ) {
-    Wire.write(buf[i]);  // sends bytes
-  }
   digitalWrite(RADIO_RDY, LOW);
+  SerialUSB.println(F("Recieved request"));
+  // Send length first
+  for( int i = 0; i < len_pkt + 1; i++ ) {
+    if( i == 0) {
+      Wire.write(len_pkt);
+    }
+    else {
+      Wire.write(buf[i-1]);  // sends bytes
+    }
+  }
+  memset (buf,0x00,len);
 }
 
 void receiveEvents(int numBytes)

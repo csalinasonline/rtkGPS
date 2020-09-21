@@ -4,6 +4,8 @@
 
 int RADIO_RDY_PIN = 4;
 
+int len_pkt;
+
 void setup() {
   Serial.begin(115200);
   while (!Serial)
@@ -18,12 +20,23 @@ void setup() {
 
 void loop() {
   if(digitalRead(RADIO_RDY_PIN)) {
-    //Request value of n to slave
-    Wire.requestFrom(I2C_LORA_ADDRESS, 20);
+    // Request pkt len from to slave
+    Wire.requestFrom(I2C_LORA_ADDRESS, 20,0);  
+    int i = 0;   
     while (Wire.available()) {
-      uint8_t c = Wire.read();
-      Serial.write(c);
-    }
-    Serial.println();
+      if( i == 0 ) {
+          len_pkt = Wire.read();
+          Serial.println(len_pkt);
+      }
+      else {
+        for( int j = 0; j < len_pkt -1; j++ ) {
+          uint8_t c = Wire.read();
+          Serial.write(c);
+        }
+        break;
+      }
+      i++;
+   }
+   Serial.println();
   }
 }
