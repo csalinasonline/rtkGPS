@@ -1,3 +1,6 @@
+// Desc: Base Lora
+// Board: Sparkfun SAMD21 Pro RF
+
 #include <SPI.h>
 #include <Wire.h>
 //Radio Head Library: 

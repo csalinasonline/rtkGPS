@@ -1,3 +1,6 @@
+// Desc: Base
+// Board: Sparkfun Artemis Thing Plus
+
 #define I2C_LORA_ADDRESS  4
 
 #include <Wire.h> //Needed for I2C to GPS
