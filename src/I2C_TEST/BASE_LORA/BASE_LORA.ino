@@ -41,7 +41,8 @@ void setup() {
   }
   
   rf95.setFrequency(frequency); 
-    
+
+  Wire.setClock(400000); //Increase I2C clock speed to 400kHz
   Wire.begin(I2C_LORA_ADDRESS); // transmit to device I2C_LORA_ADDRESS
   Wire.onRequest(requestEvents);
   Wire.onReceive(receiveEvents);
